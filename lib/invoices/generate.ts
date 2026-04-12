@@ -3,7 +3,7 @@ import { type Database } from '@/types/database.types'
 import { createMoneybirdInvoice } from '@/lib/moneybird/client'
 import { sendInvoiceEmail } from '@/lib/email/send'
 
-const VAT_RATE = 0.21
+const VAT_RATE = parseFloat(process.env.VAT_PERCENTAGE ?? '21') / 100
 
 /**
  * Generate the next sequential invoice number in format INV-YYYY-XXXXXX.

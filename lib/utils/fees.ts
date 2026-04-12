@@ -22,8 +22,9 @@ export interface FeeBreakdown {
  * @returns FeeBreakdown with all amounts in euros
  */
 export function calculateFee(amount: number, feePercentage: number): FeeBreakdown {
+  const vatPercentage = parseFloat(process.env.VAT_PERCENTAGE ?? '21') / 100
   const fee = amount * (feePercentage / 100)
-  const vat = fee * 0.21
+  const vat = fee * vatPercentage
   const total = amount + fee + vat
 
   return {

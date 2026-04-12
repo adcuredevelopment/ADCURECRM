@@ -13,13 +13,17 @@ interface AddFundsModalProps {
 }
 
 const QUICK_AMOUNTS_EUROS = [50, 100, 250, 500, 1000]
-const MIN_AMOUNT_EUROS = 10
+const MIN_AMOUNT_EUROS = parseFloat(process.env.NEXT_PUBLIC_MIN_WALLET_DEPOSIT ?? '10')
 
 const BANK_DETAILS = {
-  beneficiary: 'Adcure Agency',
-  iban: 'NL14REV0766119691',
-  bic: 'REV0NL22',
+  beneficiary: process.env.NEXT_PUBLIC_BANK_BENEFICIARY ?? 'Adcure Agency',
+  iban: process.env.NEXT_PUBLIC_BANK_IBAN ?? 'NL14REV0766119691',
+  bic: process.env.NEXT_PUBLIC_BANK_BIC ?? 'REV0NL22',
 }
+
+const PAYMENT_REFERENCE_INSTRUCTION =
+  process.env.NEXT_PUBLIC_PAYMENT_REFERENCE_INSTRUCTION ??
+  'Please use your email address as payment reference'
 
 /**
  * Modal for adding funds to the wallet via bank transfer.
@@ -183,7 +187,7 @@ export function AddFundsModal({ isOpen, onClose, onSuccess }: AddFundsModalProps
               ))}
               <div className="mt-2 rounded-lg bg-[#2D7FF9]/10 px-3 py-2">
                 <p className="text-xs text-[#2D7FF9]">
-                  Please use your email address as payment reference
+                  {PAYMENT_REFERENCE_INSTRUCTION}
                 </p>
               </div>
             </div>
