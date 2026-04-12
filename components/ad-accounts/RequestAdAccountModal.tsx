@@ -19,12 +19,19 @@ const TIMEZONES = [
   { value: 'America/Los_Angeles', label: 'America/Los_Angeles' },
 ]
 
+const PLATFORMS = [
+  { value: 'meta', label: 'Meta (Facebook / Instagram)' },
+  { value: 'google', label: 'Google Ads' },
+  { value: 'tiktok', label: 'TikTok Ads' },
+]
+
 interface FormState {
   account_name: string
   domain_name: string
   business_manager_id: string
   currency: string
   timezone: string
+  platform: string
 }
 
 const INITIAL_FORM: FormState = {
@@ -33,6 +40,7 @@ const INITIAL_FORM: FormState = {
   business_manager_id: '',
   currency: 'EUR',
   timezone: 'Europe/Amsterdam',
+  platform: 'meta',
 }
 
 /**
@@ -53,7 +61,8 @@ export function RequestAdAccountModal({ isOpen, onClose, onSuccess }: RequestAdA
   const isValid =
     form.account_name.trim() &&
     form.domain_name.trim() &&
-    form.business_manager_id.trim()
+    form.business_manager_id.trim() &&
+    form.platform
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -71,7 +80,7 @@ export function RequestAdAccountModal({ isOpen, onClose, onSuccess }: RequestAdA
           business_manager_id: form.business_manager_id.trim(),
           currency: form.currency,
           timezone: form.timezone,
-          platform: 'meta',
+          platform: form.platform,
         }),
       })
 
@@ -178,6 +187,23 @@ export function RequestAdAccountModal({ isOpen, onClose, onSuccess }: RequestAdA
               placeholder="123456789012345"
               className={inputClass}
             />
+          </div>
+
+          {/* Platform */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-white" htmlFor="platform">
+              Platform <span className="text-[#EF4444]">*</span>
+            </label>
+            <select
+              id="platform"
+              value={form.platform}
+              onChange={(e) => updateField('platform', e.target.value)}
+              className={selectClass}
+            >
+              {PLATFORMS.map((p) => (
+                <option key={p.value} value={p.value}>{p.label}</option>
+              ))}
+            </select>
           </div>
 
           {/* Currency */}

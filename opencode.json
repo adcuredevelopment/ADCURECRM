@@ -1,37 +1,10 @@
-# OpenCode.json - Geüpdatet met Model Selection
-
-## 📋 Instructies
-
-1. **Backup maken:**
-   ```bash
-   cd ~/projects/adcurecrm2
-   cp .opencode/opencode.json .opencode/opencode.json.backup
-   ```
-
-2. **Vervang de inhoud** van `.opencode/opencode.json` met de JSON hieronder
-
-3. **Sla op en test** met een nieuwe OpenCode chat
-
----
-
-## 🆕 Volledige opencode.json (met model configuratie)
-
-```json
 {
   "$schema": "https://opencode.ai/config.json",
   "instructions": [
     "AGENTS.md",
     ".opencode/context/general-guidelines.md"
   ],
-  "model": {
-    "default": "claude-sonnet-4-6-20260217",
-    "agents": {
-      "lead-dev": "claude-sonnet-4-6-20260217",
-      "architect": "claude-sonnet-4-6-20260217",
-      "coder": "claude-haiku-4-5-20251001",
-      "reviewer": "claude-haiku-4-5-20251001"
-    }
-  },
+  "model": "claude-sonnet-4-6-20260217",
   "agent": {
     "lead-dev": {
       "mode": "primary",
@@ -84,48 +57,3 @@
     }
   }
 }
-```
-
----
-
-## ✨ Wat is er veranderd?
-
-### 🆕 Toegevoegd: Model configuratie (nieuw!)
-```json
-"model": {
-  "default": "claude-sonnet-4-6-20260217",
-  "agents": {
-    "lead-dev": "claude-sonnet-4-6-20260217",
-    "architect": "claude-sonnet-4-6-20260217",
-    "coder": "claude-haiku-4-5-20251001",      // 3x goedkoper!
-    "reviewer": "claude-haiku-4-5-20251001"    // 3x goedkoper!
-  }
-}
-```
-
-### 🔄 Gewijzigd: Agent prompts
-- `coder` en `reviewer` hebben nu "MODEL USAGE" sectie
-- Agents weten nu expliciet welk model ze gebruiken
-
----
-
-## 🧪 Verificatie
-
-Na het updaten:
-
-1. Open een **nieuwe** OpenCode chat (niet bestaande!)
-2. Wacht 5-10 minuten
-3. Check [Console → Usage](https://console.anthropic.com/settings/usage)
-4. Filter op **ADCURECRM** key
-
-**Je zou moeten zien:**
-- ✅ Claude Sonnet 4.6
-- ✅ Claude Haiku 4.5
-
-In plaats van alleen "Claude Sonnet 4"!
-
----
-
-## 💰 Geschatte Besparing
-
-**~50-60% kosten reductie** door Haiku te gebruiken voor implementation en review! 🎉

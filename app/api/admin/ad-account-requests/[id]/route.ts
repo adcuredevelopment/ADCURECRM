@@ -86,6 +86,9 @@ export async function PATCH(
 
     // If approved, create a corresponding ad_account record
     if (body.status === 'approved') {
+      // Read default fee from env, fallback to 5%
+      const defaultFee = parseFloat(process.env.DEFAULT_FEE_PERCENTAGE ?? '5')
+
       const { error: insertError } = await supabase
         .from('ad_accounts')
         .insert({
@@ -95,7 +98,7 @@ export async function PATCH(
           platform: existingRequest.platform,
           currency: existingRequest.currency,
           timezone: existingRequest.timezone,
-          fee_percentage: 5,
+          fee_percentage: defaultFee,
           status: 'active',
           balance_cents: 0,
         })
