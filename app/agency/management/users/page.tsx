@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { Users, Plus, Search, MoreVertical, Pencil, Trash2, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ValidatedInput } from '@/components/shared/ValidatedInput'
 
 // =====================================================
 // Types
@@ -153,6 +154,7 @@ interface AddUserModalProps {
 
 function AddUserModal({ organizations, onAdd, onClose }: AddUserModalProps) {
   const [email, setEmail] = useState('')
+  const [emailValid, setEmailValid] = useState(false)
   const [fullName, setFullName] = useState('')
   const [role, setRole] = useState<'client' | 'agency_admin'>('client')
   const [orgId, setOrgId] = useState(organizations[0]?.id ?? '')
@@ -178,21 +180,25 @@ function AddUserModal({ organizations, onAdd, onClose }: AddUserModalProps) {
 
         <div className="rounded-lg border border-[#2D7FF9]/20 bg-[#2D7FF9]/5 px-3 py-2 mb-4">
           <p className="text-xs text-[#94A3B8]">
-            User will need to set their password via the Supabase dashboard after the record is created.
+            De gebruiker ontvangt een email om een wachtwoord in te stellen.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <FormField label="Email *">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@company.com"
-              required
-              className="w-full rounded-lg border border-[#2A3040] bg-[#141920] px-3 py-2 text-sm text-white placeholder-[#4A5568] focus:border-[#2D7FF9] focus:outline-none"
-            />
-          </FormField>
+          <ValidatedInput
+            id="add-user-email"
+            label="Email"
+            type="email"
+            placeholder="naam@bedrijf.nl"
+            required
+            validateEndpoint="/api/validate/email"
+            validatePayloadKey="email"
+            hint="Geen Gmail, Hotmail, Outlook etc."
+            onValidated={(val, valid) => {
+              setEmail(val)
+              setEmailValid(valid)
+            }}
+          />
 
           <FormField label="Full Name">
             <input
@@ -241,7 +247,7 @@ function AddUserModal({ organizations, onAdd, onClose }: AddUserModalProps) {
             </button>
             <button
               type="submit"
-              disabled={loading || !email || !orgId}
+              disabled={loading || !email || !emailValid || !orgId}
               className="flex-1 rounded-lg bg-[#2D7FF9] hover:bg-[#2070e0] px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-50"
             >
               {loading ? 'Creating...' : 'Create User'}
