@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Database } from '@/types/database.types'
 
 type UserUpdate = Database['public']['Tables']['users']['Update']
@@ -106,14 +107,24 @@ export async function DELETE(
       )
     }
 
+    // Step 1: Delete from public.users first (FK reference)
     const { error: deleteError } = await supabase
       .from('users')
       .delete()
       .eq('id', id)
 
     if (deleteError) {
-      console.error('[DELETE /api/admin/users/[id]] delete error:', deleteError)
+      console.error('[DELETE /api/admin/users/[id]] db delete error:', deleteError)
       return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 })
+    }
+
+    // Step 2: Delete from auth.users via admin client
+    const adminClient = createAdminClient()
+    const { error: authDeleteError } = await adminClient.auth.admin.deleteUser(id)
+
+    if (authDeleteError) {
+      // Non-fatal: public.users is already deleted, log for manual cleanup
+      console.error('[DELETE /api/admin/users/[id]] auth delete error (non-fatal):', authDeleteError)
     }
 
     return NextResponse.json({ success: true })
