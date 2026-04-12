@@ -1,0 +1,29 @@
+-- =====================================================
+-- AdCure Portal - Seed Data (Development Only)
+-- Migration: 20260410000004_seed_data.sql
+-- DO NOT run in production
+-- =====================================================
+-- 
+-- USAGE:
+-- 1. First create auth users via Supabase dashboard (Authentication > Users)
+--    - client@test.com / testpassword123
+--    - admin@adcure.agency / testpassword123
+--
+-- 2. Then run this seed with the actual UUIDs from auth.users:
+--    Replace <CLIENT_AUTH_UUID> and <ADMIN_AUTH_UUID> below
+--
+-- Example:
+-- INSERT INTO organizations (id, name, type) VALUES
+--   ('11111111-0000-0000-0000-000000000001', 'Test Client BV', 'client'),
+--   ('22222222-0000-0000-0000-000000000001', 'AdCure Agency', 'agency');
+--
+-- INSERT INTO users (id, organization_id, email, full_name, company_name, role) VALUES
+--   ('<CLIENT_AUTH_UUID>', '11111111-0000-0000-0000-000000000001', 'client@test.com', 'Test Client', 'Test Client BV', 'client'),
+--   ('<ADMIN_AUTH_UUID>', '22222222-0000-0000-0000-000000000001', 'admin@adcure.agency', 'AdCure Admin', 'AdCure Agency', 'agency_admin');
+--
+-- INSERT INTO wallets (organization_id, balance_cents, currency) VALUES
+--   ('11111111-0000-0000-0000-000000000001', 103001, 'EUR');
+--
+-- INSERT INTO ad_accounts (organization_id, name, account_id, platform, fee_percentage, status, balance_cents) VALUES
+--   ('11111111-0000-0000-0000-000000000001', 'Test Meta Account', 'act_123456789', 'meta', 5.00, 'active', 50000),
+--   ('11111111-0000-0000-0000-000000000001', 'Test Google Account', 'google_987654321', 'google', 3.00, 'active', 25000);
