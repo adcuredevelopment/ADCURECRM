@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Users, Plus, Search, MoreVertical, Pencil, Trash2, X } from 'lucide-react'
+import { Users, Plus, Search, MoreVertical, Pencil, Trash2, X, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ValidatedInput } from '@/components/shared/ValidatedInput'
 
@@ -321,6 +322,7 @@ interface UserCardProps {
 
 function UserCard({ user, onEdit, onDelete }: UserCardProps) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const router = useRouter()
 
   const initial = (user.full_name ?? user.email)[0]?.toUpperCase() ?? '?'
   const isAdmin = user.role === 'agency_admin'
@@ -343,6 +345,16 @@ function UserCard({ user, onEdit, onDelete }: UserCardProps) {
               onClick={(e) => { e.stopPropagation(); setMenuOpen(false) }}
             />
             <div className="absolute right-0 top-8 z-40 w-36 rounded-lg border border-[#2A3040] bg-[#1A1F2B] shadow-xl overflow-hidden">
+              {user.role === 'client' && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); router.push(`/agency/clients/${user.id}`); setMenuOpen(false) }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#94A3B8] hover:bg-[#2A3040] hover:text-white transition-colors"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                  View
+                </button>
+              )}
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onEdit(user); setMenuOpen(false) }}
