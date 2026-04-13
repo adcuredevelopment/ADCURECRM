@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  ClipboardList,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth/AuthProvider'
@@ -38,6 +39,7 @@ const clientLinks: NavLink[] = [
 
 const agencyLinks: NavLink[] = [
   { href: '/agency/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/agency/account-applications', label: 'Applications', icon: ClipboardList },
   { href: '/agency/ad-accounts', label: 'Ad Accounts', icon: Megaphone },
   { href: '/agency/wallets', label: 'Wallets', icon: Wallet },
   { href: '/agency/support', label: 'Support', icon: MessageSquare },
