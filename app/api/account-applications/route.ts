@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   sendApplicationReceivedEmail,
   sendAdminNewApplicationEmail,
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Use service role to bypass RLS for insert (public endpoint)
-    const supabase = await createClient()
+    // Use admin client to bypass RLS — this is a public endpoint, no auth session available
+    const supabase = createAdminClient()
 
     const { data: application, error } = await supabase
       .from('account_applications')
