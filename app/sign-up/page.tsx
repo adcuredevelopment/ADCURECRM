@@ -53,23 +53,23 @@ function validateVATFormat(val: string): string | null {
 
 function validateIBANFormat(val: string): string | null {
   if (!val) return null // IBAN is optional
-  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{4,}$/i.test(val.replace(/\s/g, ''))) return 'Ongeldig IBAN formaat'
+  const cleaned = val.replace(/\s/g, '').toUpperCase()
+  // Accepts all international IBANs: 2 letters + 2 digits + up to 30 alphanumeric
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{4,30}$/.test(cleaned)) return 'Ongeldig IBAN (bijv. NL91ABNA0417164300)'
   return null
 }
 
 function validatePhoneFormat(val: string): string | null {
   if (!val) return null
-  if (!/^(\+31|0)[1-9]\d{7,8}$/.test(val.replace(/\s/g, ''))) return 'Format: +31612345678 of 0612345678'
+  // Accepts international (+31, +32, +44 etc) and local Dutch formats
+  const cleaned = val.replace(/[\s\-().]/g, '')
+  if (!/^(\+\d{7,15}|0\d{8,9})$/.test(cleaned)) return 'Ongeldig telefoonnummer (bijv. +31612345678 of 0612345678)'
   return null
 }
-
-const BLOCKED_EMAIL_DOMAINS = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'live.com', 'icloud.com', 'protonmail.com', 'proton.me']
 
 function validateEmailFormat(val: string): string | null {
   if (!val) return null
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return 'Ongeldig email formaat'
-  const domain = val.split('@')[1]?.toLowerCase()
-  if (BLOCKED_EMAIL_DOMAINS.includes(domain)) return 'Gebruik een zakelijk email adres'
   return null
 }
 
@@ -319,10 +319,9 @@ export default function SignUpPage() {
 
               <FormField
                 id="email"
-                label="Zakelijk email"
+                label="Email"
                 required
                 error={errors.email}
-                hint="Geen Gmail, Hotmail, Outlook etc."
               >
                 <input
                   id="email"

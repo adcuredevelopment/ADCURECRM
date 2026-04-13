@@ -21,7 +21,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/login' ||
     pathname === '/' ||
     pathname === '/sign-up' ||
-    pathname === '/sign-up-success'
+    pathname === '/sign-up-success' ||
+    pathname === '/api/account-applications'
 
   // If not authenticated and trying to access protected route
   if (!user && !isPublicRoute) {
