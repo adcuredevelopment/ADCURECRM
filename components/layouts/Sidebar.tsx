@@ -64,7 +64,7 @@ export function Sidebar({ role }: SidebarProps) {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/login')
+    window.location.href = '/login'
   }
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
