@@ -328,7 +328,10 @@ function UserCard({ user, onEdit, onDelete }: UserCardProps) {
   const isAdmin = user.role === 'agency_admin'
 
   return (
-    <div className="relative rounded-xl border border-[#2A3040] bg-[#141920] p-5 hover:border-[#3A4050] transition-colors">
+    <div
+      className="relative rounded-xl border border-[#2A3040] bg-[#141920] p-5 hover:border-[#3A4050] transition-colors cursor-pointer"
+      onClick={() => user.role === 'client' && router.push(`/agency/clients/${user.id}`)}
+    >
       {/* Three-dots menu */}
       <div className="absolute top-4 right-4 z-30">
         <button
