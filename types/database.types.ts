@@ -6,6 +6,57 @@
 export interface Database {
   public: {
     Tables: {
+      account_applications: {
+        Row: {
+          id: string
+          company_name: string
+          kvk_number: string
+          vat_number: string
+          iban: string | null
+          full_name: string
+          email: string
+          phone: string
+          status: 'pending' | 'approved' | 'rejected'
+          reviewed_by: string | null
+          reviewed_at: string | null
+          rejection_reason: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_name: string
+          kvk_number: string
+          vat_number: string
+          iban?: string | null
+          full_name: string
+          email: string
+          phone: string
+          status?: 'pending' | 'approved' | 'rejected'
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_name?: string
+          kvk_number?: string
+          vat_number?: string
+          iban?: string | null
+          full_name?: string
+          email?: string
+          phone?: string
+          status?: 'pending' | 'approved' | 'rejected'
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       organizations: {
         Row: {
           id: string

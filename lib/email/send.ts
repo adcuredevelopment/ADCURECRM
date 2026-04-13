@@ -319,3 +319,232 @@ export async function sendInvoiceEmail(data: {
     console.error('[email] sendInvoiceEmail failed:', err)
   }
 }
+
+// =====================================================
+// Application emails
+// =====================================================
+
+/**
+ * Sent to applicant after submitting sign-up form
+ */
+export async function sendApplicationReceivedEmail(data: {
+  to: string
+  fullName: string
+  companyName: string
+}): Promise<void> {
+  if (!isEmailConfigured()) {
+    console.warn('[email] sendApplicationReceivedEmail skipped: RESEND_API_KEY not configured')
+    return
+  }
+
+  const html = wrapEmailHtml(`
+    <h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#FFFFFF;">
+      Aanvraag ontvangen ✅
+    </h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      Beste ${data.fullName},
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      We hebben je aanvraag voor <strong style="color:#FFFFFF;">${data.companyName}</strong> ontvangen.
+      Ons team bekijkt je aanvraag zo snel mogelijk — dit duurt meestal <strong style="color:#FFFFFF;">minder dan 24 uur</strong>.
+    </p>
+    <p style="margin:0 0 24px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      Je ontvangt een email zodra je aanvraag is beoordeeld.
+    </p>
+    <p style="margin:0;font-size:14px;color:#94A3B8;">
+      Met vriendelijke groet,<br/>
+      <strong style="color:#FFFFFF;">Het AdCure Team</strong>
+    </p>
+  `)
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `Aanvraag ontvangen — ${data.companyName}`,
+      html,
+    })
+  } catch (err) {
+    console.error('[email] sendApplicationReceivedEmail failed:', err)
+  }
+}
+
+/**
+ * Sent to admin when a new application is submitted
+ */
+export async function sendAdminNewApplicationEmail(data: {
+  companyName: string
+  fullName: string
+  email: string
+  phone: string
+  kvkNumber: string
+  vatNumber: string
+  applicationId: string
+}): Promise<void> {
+  const adminEmail = process.env.ADMIN_EMAIL
+  if (!adminEmail) {
+    console.warn('[email] sendAdminNewApplicationEmail skipped: ADMIN_EMAIL not set')
+    return
+  }
+  if (!isEmailConfigured()) {
+    console.warn('[email] sendAdminNewApplicationEmail skipped: RESEND_API_KEY not configured')
+    return
+  }
+
+  const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL}/agency/account-applications`
+
+  const html = wrapEmailHtml(`
+    <h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#FFFFFF;">
+      Nieuwe accountaanvraag 🔔
+    </h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#94A3B8;">
+      Er is een nieuwe aanvraag binnengekomen die je aandacht vereist.
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #2A3040;border-radius:8px;overflow:hidden;margin-bottom:24px;">
+      <tr style="background-color:#141920;">
+        <td style="padding:12px 16px;font-size:12px;color:#4A5568;width:140px;">Bedrijf</td>
+        <td style="padding:12px 16px;font-size:14px;color:#FFFFFF;font-weight:600;">${data.companyName}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;font-size:12px;color:#4A5568;border-top:1px solid #2A3040;">Contactpersoon</td>
+        <td style="padding:12px 16px;font-size:14px;color:#94A3B8;border-top:1px solid #2A3040;">${data.fullName}</td>
+      </tr>
+      <tr style="background-color:#141920;">
+        <td style="padding:12px 16px;font-size:12px;color:#4A5568;border-top:1px solid #2A3040;">Email</td>
+        <td style="padding:12px 16px;font-size:14px;color:#94A3B8;border-top:1px solid #2A3040;">${data.email}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;font-size:12px;color:#4A5568;border-top:1px solid #2A3040;">Telefoon</td>
+        <td style="padding:12px 16px;font-size:14px;color:#94A3B8;border-top:1px solid #2A3040;">${data.phone}</td>
+      </tr>
+      <tr style="background-color:#141920;">
+        <td style="padding:12px 16px;font-size:12px;color:#4A5568;border-top:1px solid #2A3040;">KVK</td>
+        <td style="padding:12px 16px;font-size:14px;color:#94A3B8;border-top:1px solid #2A3040;">${data.kvkNumber}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;font-size:12px;color:#4A5568;border-top:1px solid #2A3040;">BTW</td>
+        <td style="padding:12px 16px;font-size:14px;color:#94A3B8;border-top:1px solid #2A3040;">${data.vatNumber}</td>
+      </tr>
+    </table>
+    <a href="${reviewUrl}" style="display:inline-block;background-color:#2D7FF9;color:#FFFFFF;padding:12px 24px;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
+      Bekijk aanvraag →
+    </a>
+  `)
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: adminEmail,
+      subject: `Nieuwe aanvraag: ${data.companyName}`,
+      html,
+    })
+  } catch (err) {
+    console.error('[email] sendAdminNewApplicationEmail failed:', err)
+  }
+}
+
+/**
+ * Sent to applicant when their application is approved
+ */
+export async function sendApplicationApprovedEmail(data: {
+  to: string
+  fullName: string
+  companyName: string
+  loginUrl: string
+}): Promise<void> {
+  if (!isEmailConfigured()) {
+    console.warn('[email] sendApplicationApprovedEmail skipped: RESEND_API_KEY not configured')
+    return
+  }
+
+  const html = wrapEmailHtml(`
+    <h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#10B981;">
+      Account Goedgekeurd! 🎉
+    </h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      Beste ${data.fullName},
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      Geweldig nieuws! Je account voor <strong style="color:#FFFFFF;">${data.companyName}</strong> is goedgekeurd.
+      Je kunt nu aan de slag met het AdCure Client Portal.
+    </p>
+    <div style="background-color:#141920;border:1px solid #2A3040;border-radius:8px;padding:20px;margin:0 0 24px;">
+      <h3 style="margin:0 0 12px;font-size:14px;font-weight:600;color:#FFFFFF;">Volgende stappen:</h3>
+      <ol style="margin:0;padding-left:20px;color:#94A3B8;font-size:14px;line-height:2;">
+        <li>Klik op de knop hieronder om je wachtwoord in te stellen</li>
+        <li>Log in op het portal</li>
+        <li>Start met het aanvragen van advertentieaccounts</li>
+      </ol>
+    </div>
+    <a href="${data.loginUrl}" style="display:inline-block;background-color:#2D7FF9;color:#FFFFFF;padding:12px 24px;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
+      Wachtwoord Instellen →
+    </a>
+    <p style="margin:24px 0 0;font-size:14px;color:#94A3B8;">
+      Welkom bij AdCure!<br/>
+      <strong style="color:#FFFFFF;">Het AdCure Team</strong>
+    </p>
+  `)
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `✅ Je account is goedgekeurd — Welkom bij AdCure!`,
+      html,
+    })
+  } catch (err) {
+    console.error('[email] sendApplicationApprovedEmail failed:', err)
+  }
+}
+
+/**
+ * Sent to applicant when their application is rejected
+ */
+export async function sendApplicationRejectedEmail(data: {
+  to: string
+  fullName: string
+  companyName: string
+  rejectionReason: string
+}): Promise<void> {
+  if (!isEmailConfigured()) {
+    console.warn('[email] sendApplicationRejectedEmail skipped: RESEND_API_KEY not configured')
+    return
+  }
+
+  const supportEmail = process.env.SUPPORT_EMAIL ?? 'support@adcure.agency'
+
+  const html = wrapEmailHtml(`
+    <h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#FFFFFF;">
+      Accountaanvraag Afgewezen
+    </h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      Beste ${data.fullName},
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      Helaas kunnen we je aanvraag voor <strong style="color:#FFFFFF;">${data.companyName}</strong> op dit moment niet goedkeuren.
+    </p>
+    <div style="background-color:#1A0A0A;border-left:4px solid #EF4444;border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px;">
+      <p style="margin:0 0 4px;font-size:12px;color:#EF4444;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Reden</p>
+      <p style="margin:0;font-size:14px;color:#94A3B8;line-height:1.6;">${data.rejectionReason}</p>
+    </div>
+    <p style="margin:0 0 16px;font-size:14px;color:#94A3B8;line-height:1.6;">
+      Denk je dat dit een vergissing is? Neem dan contact op via
+      <a href="mailto:${supportEmail}" style="color:#2D7FF9;text-decoration:none;">${supportEmail}</a>.
+    </p>
+    <p style="margin:0;font-size:14px;color:#94A3B8;">
+      Met vriendelijke groet,<br/>
+      <strong style="color:#FFFFFF;">Het AdCure Team</strong>
+    </p>
+  `)
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject: `Accountaanvraag — ${data.companyName}`,
+      html,
+    })
+  } catch (err) {
+    console.error('[email] sendApplicationRejectedEmail failed:', err)
+  }
+}
